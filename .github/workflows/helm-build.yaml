@@ -1,0 +1,63 @@
+name: Build Helm charts
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Lint charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          charts=(charts/*/Chart.yaml)
+          test "${#charts[@]}" -gt 0
+          for chart_file in "${charts[@]}"; do
+            helm lint "$(dirname "$chart_file")"
+          done
+
+      - name: Render charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          charts=(charts/*/Chart.yaml)
+          for chart_file in "${charts[@]}"; do
+            chart_dir="$(dirname "$chart_file")"
+            chart_name="$(basename "$chart_dir")"
+            helm template "$chart_name" "$chart_dir" --namespace tenant-example >/dev/null
+          done
+
+      - name: Package charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          shopt -s nullglob
+          charts=(charts/*/Chart.yaml)
+          for chart_file in "${charts[@]}"; do
+            helm package "$(dirname "$chart_file")" --destination dist
+          done
+
+      - name: Upload packaged charts
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-charts-${{ github.sha }}
+          path: dist/*.tgz
+          if-no-files-found: error
+

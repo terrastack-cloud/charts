@@ -1,0 +1,9 @@
+apiVersion: v2
+name: tenant-bootstrap
+description: Baseline namespace quota and network policies for a Terrastack tenant
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: Terrastack Cloud
+

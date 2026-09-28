@@ -1,0 +1,14 @@
+{{- if .Values.resourceQuota.enabled }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ include "tenant-bootstrap.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/part-of: terrastack-tenant
+spec:
+  hard:
+{{ toYaml .Values.resourceQuota.hard | indent 4 }}
+{{- end }}
+
