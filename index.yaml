@@ -3,9 +3,9 @@ entries:
   tenant-bootstrap:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-09-28T08:43:34.473566376Z"
+    created: "2026-09-28T12:04:27.60267834Z"
     description: Baseline namespace quota and network policies for a Terrastack tenant
-    digest: 0a268b28b3ceb62ea43dd7f86fce9b188d8136b2b855fe66a3ebea085f907e44
+    digest: 198fcf163f3186d6f9e5f81989f0d0142da04c2fb26f04730366826bc93d2e58
     maintainers:
     - name: Terrastack Cloud
     name: tenant-bootstrap
@@ -13,4 +13,4 @@ entries:
     urls:
     - https://terrastack-cloud.github.io/charts/tenant-bootstrap-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-28T08:43:34.473238757Z"
+generated: "2026-09-28T12:04:27.602320462Z"
