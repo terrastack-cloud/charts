@@ -10,11 +10,11 @@ spec:
     - Ingress
     - Egress
 ---
-{{- if .Values.networkPolicy.allowNamespaceIngress }}
+{{- if .Values.networkPolicy.allowAllNamespaceIngress }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "tenant-bootstrap.fullname" . }}-namespace-ingress
+  name: {{ include "tenant-bootstrap.fullname" . }}-all-namespace-ingress
   namespace: {{ .Release.Namespace }}
 spec:
   podSelector: {}
@@ -22,7 +22,7 @@ spec:
     - Ingress
   ingress:
     - from:
-        - podSelector: {}
+        - namespaceSelector: {}
 {{- end }}
 ---
 {{- if .Values.networkPolicy.allowNamespaceEgress }}
@@ -64,5 +64,26 @@ spec:
         - protocol: TCP
           port: 53
 {{- end }}
+---
+{{- if .Values.networkPolicy.allowInternetEgress }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "tenant-bootstrap.fullname" . }}-internet-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              {{- toYaml .Values.networkPolicy.internetEgressExceptIPv4CIDRs | nindent 14 }}
+        - ipBlock:
+            cidr: ::/0
+            except:
+              {{- toYaml .Values.networkPolicy.internetEgressExceptIPv6CIDRs | nindent 14 }}
 {{- end }}
-
+{{- end }}
