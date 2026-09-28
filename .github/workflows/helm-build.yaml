@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -61,3 +61,15 @@ jobs:
           path: dist/*.tgz
           if-no-files-found: error
 
+      - name: Build Helm repository index
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: helm repo index dist --url https://terrastack-cloud.github.io/charts
+
+      - name: Publish Helm repository to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: dist
+          clean: true
